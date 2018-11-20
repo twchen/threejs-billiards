@@ -1,5 +1,5 @@
-var WIDTH  = 960,
-    HEIGHT = 480;
+//var WIDTH  = window.innerWidth, HEIGHT = window.innerHeight;
+var WIDTH = 960, HEIGHT = 480;
 
 // Globals
 var renderer, scene, camera, game, controls, keyboard, lightsConfig, world, gui, eightballgame;
@@ -11,6 +11,7 @@ var stats = new Stats();
 stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
 
 var textureLoader = new THREE.TextureLoader();
+
 THREE.DefaultLoadingManager.onProgress = function (item, loaded, total) {
   if (typeof progressBar !== 'undefined') {
     progressBar.style.width = (loaded / total * 100) + '%';
@@ -19,7 +20,7 @@ THREE.DefaultLoadingManager.onProgress = function (item, loaded, total) {
   if (loaded == total && total > 7) {
     // hide progress bar
     var progBarDiv = document.getElementById('loading');
-    progBarDiv.parentNode.removeChild(progBarDiv);
+    //progBarDiv.parentNode.removeChild(progBarDiv);
 
     gui.show(document.getElementById('mainMenu'));
 
@@ -34,7 +35,7 @@ THREE.DefaultLoadingManager.onProgress = function (item, loaded, total) {
 var VIEW_ANGLE = 45,
     ASPECT     = WIDTH / HEIGHT,
     NEAR       = 1,
-    FAR        = 1000;
+    FAR        = 2000;
 
 // We use the clock to measure time, an extension for the keyboard
 var clock = new THREE.Clock();
@@ -65,6 +66,7 @@ function onLoad() {
   // Define how different objects interect physics-wise:
   setCollisionBehaviour();
   // Configure lighting:
+  createSky();
   addLights();
 
   // MOUSE controls
@@ -73,10 +75,10 @@ function onLoad() {
   controls.enableZoom = true;
   controls.enablePan = true;
 
-  controls.minDistance = 35;
-  controls.maxDistance = 165;
+  //controls.minDistance = 35;
+  //controls.maxDistance = 165;
   // Don't let the camera go below the ground
-  controls.maxPolarAngle = 0.49 * Math.PI;
+  //controls.maxPolarAngle = 0.49 * Math.PI;
 
   camera.position.set(-170, 70, 0);
 
@@ -144,10 +146,30 @@ function draw() {
   renderer.render(scene, camera); // We render our scene with our camera
 }
 
+function createSky(){
+  var geometry = new THREE.CubeGeometry(2000, 2000, 2000);
+  var prefix = 'textures/skybox/chlorine-bay_';
+  var ext = '.tga';
+  var filenames = ['ft', 'bk', 'up', 'dn', 'rt', 'lf'];
+  var materials = [];
+  var loader = new THREE.TGALoader();
+  for(var i = 0; i < filenames.length; ++i){
+    materials.push(new THREE.MeshBasicMaterial({
+      map: loader.load(prefix + filenames[i] + ext),
+      side: THREE.BackSide
+    }));
+  }
+  var cube = new THREE.Mesh(geometry, materials);
+  scene.add(cube);
+}
+
 // Adds an ambient light and two spotlights above the table
 function addLights() {
-  var light = new THREE.AmbientLight(0x0d0d0d); // soft white ambient light
-  scene.add(light);
+  var ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.4); // soft white ambient light
+  scene.add(ambientLight);
+  /*
   var tableLight1 = new TableLight( Table.LEN_X / 4, 150, 0);
   var tableLight2 = new TableLight(-Table.LEN_X / 4, 150, 0);
+  */
+  var sunLight = new DirectionalLight(0, 100, Table.LEN_Z);
 }

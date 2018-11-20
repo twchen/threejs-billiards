@@ -1,6 +1,10 @@
-var Ball = function (x, y, z, name, color) {
-  this.color = typeof color === 'undefined' ? 0xcc0000 : color; //default color
-  this.texture = 'images/balls/' + name + '.png';
+var Ball = function (x, y, z, name) {
+  /*
+  if(name !== 'whiteball'){
+    this.texture = 'images/balls/' + name + '.png';
+  }
+  */
+  this.texture = 'textures/ball-' + name.slice(0, -4) + '.jpg';
 
   this.mesh = this.createMesh(x,y,z);
   this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
@@ -18,6 +22,7 @@ Ball.contactMaterial = new CANNON.Material("ballMaterial");
 
 /** Load env map for the ball.
   TODO: find a nicer place to do this. */
+  /*
 Ball.envMapUrls = [
   'images/skybox1/px.png', // positive x
   'images/skybox1/nx.png', // negative x
@@ -31,6 +36,7 @@ var cubeTextureLoader = new THREE.CubeTextureLoader();
 Ball.envMap = cubeTextureLoader.load(Ball.envMapUrls, function (tex) {
   Ball.envMap = tex;
 });
+*/
 
 Ball.prototype.onEnterHole = function () {
   this.rigidBody.velocity = new CANNON.Vec3(0);
@@ -58,22 +64,24 @@ Ball.prototype.createBody = function (x,y,z) {
 };
 
 Ball.prototype.createMesh = function (x,y,z) {
-  var geometry = new THREE.SphereGeometry(Ball.RADIUS, 16, 16);
+  var geometry = new THREE.SphereGeometry(Ball.RADIUS, 32, 32);
+  /*
   var material = new THREE.MeshPhongMaterial({
     specular: 0xffffff,
     shininess: 140,
     reflectivity: 0.1,
-    envMap: Ball.envMap,
-    combine: THREE.AddOperation,
-    shading: THREE.SmoothShading
+    envMap: Ball.envMap, // for reflection
+    combine: THREE.AddOperation // how the result of the surface's color is combined with the environment map
   });
+  */
+ var material = new THREE.MeshPhongMaterial();
 
   if (typeof this.texture === 'undefined') {
-    material.color = new THREE.Color(this.color);
+    material.color = new THREE.Color(0xffffff);
   } else {
     textureLoader.load(this.texture, function (tex) {
       material.map = tex;
-      material.needsUpdate = true;
+      material.needsUpdate = false;
     });
   }
 

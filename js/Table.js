@@ -6,10 +6,9 @@ var Table = function () {
   var loader = new THREE.JSONLoader();
   loader.load('json/table/base.json', function (geometry) {
     var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x000000),
+      color: new THREE.Color(0x7a5230),
       specular: 0x404040,
-      shininess: 20,
-      shading: THREE.SmoothShading
+      shininess: 20
     }));
 
     mesh.position.x = mesh_x;
@@ -22,11 +21,15 @@ var Table = function () {
   });
 
   loader.load('json/table/felt.json', function (geometry) {
+    //var texture = textureLoader.load('textures/green-light-baize.jpg');
+    var texture = textureLoader.load('textures/baize1.jpg');
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
     var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-      color: new THREE.Color(TABLE_COLORS.cloth),
+      //color: new THREE.Color(TABLE_COLORS.cloth),
       specular: 0x404040,
       shininess: 10,
-      shading: THREE.SmoothShading
+      map: texture
     }));
 
     mesh.position.x = mesh_x;
@@ -42,8 +45,7 @@ var Table = function () {
     var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
       color: new THREE.Color(0x7a5230),
       specular: 0x404040,
-      shininess: 100,
-      shading: THREE.SmoothShading
+      shininess: 100
     }));
 
     mesh.position.x = mesh_x;
@@ -59,8 +61,7 @@ var Table = function () {
     var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
       color: new THREE.Color(0x7a5230),
       specular: 0x3D3D3D,
-      shininess: 20,
-      shading: THREE.SmoothShading
+      shininess: 20
     }));
 
     mesh.position.x = mesh_x;
@@ -76,8 +77,7 @@ var Table = function () {
     var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
       color: new THREE.Color(0x000),
       specular: 0x000,
-      shininess: 0,
-      shading: THREE.SmoothShading
+      shininess: 0
     }));
 
     mesh.position.x = mesh_x;

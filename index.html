@@ -9,10 +9,14 @@
 
     <link rel="stylesheet" href="styles.css">
     <!-- external js libs -->
-    <script type="text/javascript" src="lib/three.js/build/three.min.js"></script>
-    <script type="text/javascript" src="lib/cannon.min.js"></script>
-    <script type="text/javascript" src="lib/stats.min.js"></script>
-    <script type="text/javascript" src="lib/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/98/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/js/loaders/TGALoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/js/controls/OrbitControls.js"></script>
+    <!--
+      <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/js/controls/TrackballControls.js"></script>
+    -->
 
     <script type="text/javascript" src="js/CannonUtils.js"></script>
 
@@ -22,6 +26,7 @@
     <script type="text/javascript" src="js/LongWall.js"></script>
     <script type="text/javascript" src="js/ShortWall.js"></script>
     <script type="text/javascript" src="js/Table.js"></script>
+    <script type="text/javascript" src="js/Cue.js"></script>
     <script type="text/javascript" src="js/Ball.js"></script>
     <script type="text/javascript" src="js/WhiteBall.js"></script>
     <script type="text/javascript" src="js/TableLight.js"></script>
@@ -46,7 +51,6 @@
         <div>
           <h1>3D Billiards</h1>
           <button type="button" onclick="gui.play8BallClicked()" class="btn btn-primary btn-lg btn-block">Play 8-ball</button>
-          <button onclick="alert('Please, don\'t.')" type="button" class="btn btn-default btn-lg btn-block">Pre-order 3D Billiards 2016 season pass now for $/€/£/69.99</button>
         </div>
       </div>
 
@@ -107,10 +111,13 @@
 
       <div id="canvas"></div>
     </div>
-
+    
     <div class="jumbotron guide">
       <p>Use the mouse to look around, click on the button to make the white ball move.</p>
     </div>
+    <!--
+    -->
+    
     <div id="status"></div>
 	</body>
 </html>

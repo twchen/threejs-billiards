@@ -1,5 +1,4 @@
 var WhiteBall = function (x, y, z) {
-  this.color = 0xffffff;
   this.defaultPosition = new CANNON.Vec3(-Table.LEN_X / 4, Ball.RADIUS, 0);
   // Call the parent constructor, making sure (using Function#call)
   // that "this" is set correctly during the call
@@ -8,8 +7,7 @@ var WhiteBall = function (x, y, z) {
     this.defaultPosition.x,
     this.defaultPosition.y,
     this.defaultPosition.z,
-    'whiteball',
-    this.color
+    'whiteball'
   );
 
   this.forward = new THREE.Vector3(1, 0, 0);
@@ -18,6 +16,9 @@ var WhiteBall = function (x, y, z) {
 
   this.dot = this.createIntersectionDot();
   scene.add(this.dot);
+
+  this.cue = new Cue();
+  scene.add(this.cue.mesh);
 };
 
 WhiteBall.prototype = Object.create(Ball.prototype);
@@ -97,6 +98,7 @@ WhiteBall.prototype.updateGuideLine = function () {
 
   this.forwardLine.rotation.y = angle;
   this.forward.normalize();
+  this.cue.update(this.mesh.position, this.forward);
 
   // Go through each ball
   var distances = [];
@@ -116,19 +118,21 @@ WhiteBall.prototype.updateGuideLine = function () {
   for (var j = 0; j < distances.length; j++) {
     var ballIndex = distances[j].index;
     var curBall = game.balls[ballIndex];
-    if (this.forwardLine.ray.isIntersectionSphere(curBall.sphere)) {
+    if (this.forwardLine.ray.intersectsSphere(curBall.sphere)) {
       intersectingBallIndex = ballIndex;
       break;
     }
   }
   //This could possibly be optimized with some more clever usage of THREE js-s offered functions (look into Ray, etc)
 
+  this.intersectionPoint = new THREE.Vector3();
+
   if (intersectingBallIndex == -1) {
     // We're intersecting with the edge of the table
-    this.intersectionPoint = this.forwardLine.ray.intersectBox(this.forwardLine.box);
+    this.forwardLine.ray.intersectBox(this.forwardLine.box, this.intersectionPoint);
   } else {
     // Otherwise we are aiming at some ball
-    this.intersectionPoint = this.forwardLine.ray.intersectSphere(game.balls[intersectingBallIndex].sphere);
+    this.forwardLine.ray.intersectSphere(game.balls[intersectingBallIndex].sphere, this.intersectionPoint);
   }
 
   var distance = Math.sqrt(this.mesh.position.distanceToSquared(this.intersectionPoint));
@@ -143,9 +147,9 @@ WhiteBall.prototype.createForwardLine = function () {
 
   vertArray.push(new THREE.Vector3(0, 0, 0));
   vertArray.push(new THREE.Vector3(85, 0, 0));
-  lineGeometry.computeLineDistances();
   var lineMaterial = new THREE.LineDashedMaterial({ color: 0xdddddd, dashSize: 4, gapSize: 2 });
   var line = new THREE.Line(lineGeometry, lineMaterial);
+  line.computeLineDistances();
   line.position.copy(new THREE.Vector3(100, 100, 100)); //hide it somewhere initially
   line.box = new THREE.Box3(
     new THREE.Vector3(-Table.LEN_X / 2, 0,               -Table.LEN_Z / 2),
