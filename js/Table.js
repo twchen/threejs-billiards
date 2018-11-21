@@ -22,7 +22,7 @@ var Table = function () {
 
   loader.load('json/table/felt.json', function (geometry) {
     //var texture = textureLoader.load('textures/green-light-baize.jpg');
-    var texture = textureLoader.load('textures/baize1.jpg');
+    var texture = textureLoader.load('textures/baize.jpg');
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({

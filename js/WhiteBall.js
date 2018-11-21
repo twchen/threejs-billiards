@@ -17,8 +17,8 @@ var WhiteBall = function (x, y, z) {
   this.dot = this.createIntersectionDot();
   scene.add(this.dot);
 
-  this.cue = new Cue();
-  scene.add(this.cue.mesh);
+  this.cue = new Cue(scene);
+  this.trajectory = new Trajectory(scene);
 };
 
 WhiteBall.prototype = Object.create(Ball.prototype);
@@ -99,6 +99,7 @@ WhiteBall.prototype.updateGuideLine = function () {
   this.forwardLine.rotation.y = angle;
   this.forward.normalize();
   this.cue.update(this.mesh.position, this.forward);
+  this.predictTrajectory();
 
   // Go through each ball
   var distances = [];
@@ -139,6 +140,34 @@ WhiteBall.prototype.updateGuideLine = function () {
 
   this.forwardLine.geometry.vertices[1].x = distance;
   this.forwardLine.geometry.verticesNeedUpdate = true;
+};
+
+WhiteBall.prototype.predictTrajectory = function(){
+  var minT = Number.POSITIVE_INFINITY;
+  var ballIndex = -1, t;
+  var diameterSq = 4 * Ball.RADIUS * Ball.RADIUS;
+  for(var i = 1; i < game.balls.length; ++i){
+    var v = game.balls[i].mesh.position.clone().sub(this.mesh.position);
+    var lengthSq = v.lengthSq();
+    var projection = v.clone().dot(this.forward);
+    if(projection <= 0) continue;
+    var distanceSq = lengthSq - projection * projection;
+    if(distanceSq >= diameterSq) continue;
+    var l = Math.sqrt(diameterSq - distanceSq);
+    var t = projection - l;
+    if(minT > t){
+      minT = t;
+      ballIndex = i;
+    }
+  }
+  if(ballIndex !== -1){
+    var centerAtCollision = this.mesh.position.clone().add(this.forward.clone().multiplyScalar(minT));
+    //var forward = game.balls[ballIndex].mesh.position.clone().sub(centerAtCollision).normalize();
+    //this.trajectory.show(game.balls[ballIndex].mesh.position, forward);
+    this.trajectory.draw(centerAtCollision, game.balls[ballIndex].mesh.position);
+  }else{
+    this.trajectory.hide();
+  }
 };
 
 WhiteBall.prototype.createForwardLine = function () {
