@@ -55,8 +55,11 @@
         </div>
       </div>
 
+      <!--
       <div id="controlsHud" class="hide">
-        <div class="player player1 unknown">
+      -->
+      
+        <div class="player player1 unknown layer2">
           <h5>Player 1 (<span></span>)</h5>
 
           <ul>
@@ -70,7 +73,7 @@
           </ul>
         </div>
 
-        <div class="player player2 unknown">
+        <div class="player player2 unknown layer2">
           <h5>Player 2 (<span></span>)</h5>
 
           <ul>
@@ -84,7 +87,7 @@
           </ul>
         </div>
 
-        <div class="shootControls">
+        <div class="shootControls layer2">
           <div class="power">
             Strength:
             <form>
@@ -95,15 +98,18 @@
           <button id="btn_ball" type="button" class="btn btn-success">Hit</button>
         </div>
 
-        <ul class="gamelog list-unstyled">
+        <ul class="gamelog list-unstyled layer2">
 
         </ul>
 
-        <div class="timer">
+        <div class="timer layer2">
           30
         </div>
-        <div id="fps_stats_container"></div>
+        <div id="fps_stats_container layer2"></div>
+      <!--
       </div>
+      -->
+      
 
       <div id="gameover" class="hide">
         <h1>Player won!</h1>
@@ -112,6 +118,7 @@
 
       <div id="canvas"></div>
     </div>
+    
     
     <div class="jumbotron guide">
       <p>Use the mouse to look around, click on the button to make the white ball move.</p>

@@ -8,7 +8,7 @@ var GameGui = function () {
 
 GameGui.prototype.setupGameHud = function() {
   this.hide(document.getElementById('mainMenu'));
-  this.show(document.getElementById('controlsHud'));
+  //this.show(document.getElementById('controlsHud'));
 };
 
 GameGui.addClass = function (el, className) {

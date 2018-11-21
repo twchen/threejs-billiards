@@ -1,12 +1,7 @@
 #overlay {
-  padding-left: 0;
-  padding-right: 0;
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
   display: block;
-  width: 960px;
   position: relative;
-  height: 480px;
   z-index: 1;
   background-color: #000;
 }
@@ -100,8 +95,8 @@
   border: 1px solid #000;
   display: block;
   position: absolute;
-  width: 200px;
-  top: 5px;
+  width: 30rem;
+  top: 1rem;
   text-align: center;
   background-color: rgba(128, 128, 128, 0.75);
   border-color: rgb(128, 128, 128);
@@ -112,18 +107,7 @@
   list-style-type: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-}
-
-.player ul li {
-  float: left;
-  padding: 0;
-  margin: 0 3px;
-  width: 20px;
-  height: 20px;
-  text-align: center;
-  display: block;
-  border-radius: 20px;
+  /* overflow: hidden; */
 }
 
 .player ul li.pocketed {
@@ -131,7 +115,7 @@
 }
 
 .player1 {
-  left: 5px;
+  left: 1rem;
 }
 
 .player.active {
@@ -140,119 +124,18 @@
 }
 
 .player2 {
-  left: 755px;
-
+  right: 1rem;
 }
 
 .player h5 {
   margin: 0;
   padding: 0;
-  margin-top: 2px;
-  margin-left: 3px;
-  margin-bottom: 3px;
+  margin: 0.5rem;
   color: #eaeaea;
   text-shadow: -1px -1px 0 #3d3d3d,
                 1px -1px 0 #3d3d3d,
                -1px  1px 0 #3d3d3d,
                 1px  1px 0 #3d3d3d;
-}
-
-#controlsHud {
-  z-index: 2;
-  position: absolute;
-}
-
-.shootControls {
-  background-color: rgba(255, 255, 255, 0.75);
-  border-radius: 3px;
-  border: 1px solid #000;
-  display: block;
-  position: absolute;
-  width: 200px;
-  top: 395px;
-  left: 380px;
-  text-align: center;
-}
-
-.power {
-  width: 95%;
-  margin: 0 auto;
-}
-
-.power form, .power input {
-  padding: 0;
-  margin: 0;
-}
-
-#btn_ball {
-  width: 95%;
-  margin-bottom: 2px;
-  margin-top: 2px;
-}
-
-.gamelog {
-  background-color: rgba(0, 0, 0, 0.25);
-  border-radius: 3px;
-  border: 1px solid #000;
-  display: block;
-  position: absolute;
-  width: 300px;
-  top: 450px;
-  left: 5px;
-  text-align: center;
-  z-index: 2;
-  height: 150px;
-}
-
-.gamelog {
-  text-align: left;
-  margin: 0;
-  margin-left: 3px;
-  color: #dadada;
-  height: 14px;
-}
-
-.gamelog {
-  height: 20px;
-  padding: 0 3px;
-}
-
-.gamelog:hover {
-  height: 130px;
-  top: 340px;
-}
-
-.gamelog li {
-  display: none;
-}
-
-.gamelog li:nth-last-child(-n+1) {
-  display: block;
-}
-
-.gamelog:hover li:nth-last-child(-n+6) {
-  display: block;
-}
-
-.gamelog li {
-  margin: 0;
-  padding: 0;
-  margin-top: 0px;
-}
-
-.timer {
-  background-color: rgba(255, 255, 255, 0.75);
-  border-radius: 3px;
-  border: 1px solid #000;
-  display: block;
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  top: 420px;
-  left: 900px;
-  text-align: center;
-  font-size: 36px;
-  z-index: 1;
 }
 
 .player.solid span:before {
@@ -267,29 +150,27 @@
 }
 
 
-#stats {
-    position: absolute;
-    top: 420px;
-    left: 810px;
-    z-index: 1;
-}
-
 .player ul li {
-  font-size: 10px;
-  line-height: 19px;
+  float: left;
+  padding: 0;
+  margin: 0 0.5rem;
+  width: 3rem;
+  height: 3rem;
   text-align: center;
+  display: block;
+  border-radius: 3rem;
+  font-size: 1.5rem;
+  line-height: 3rem;
 }
 
-.player ul li::after {
+.player ul li::before {
   display: block;
-  background-color: white;
-  width: 12px;
-  height: 12px;
-  border-radius: 12px;
-  margin-top: -15px;
+  border: 1px solid #000;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 3rem;
   content: '';
-  margin-left: 4px;
-  z-index: 10;
+  margin-bottom: -3rem;
 }
 
 .player.striped ul li::before {
@@ -300,17 +181,17 @@
   background-image: none;
 }
 
-.player ul li::before {
+.player ul li::after {
   display: block;
-  border: 1px solid #000;
-  width: 20px;
-  height: 20px;
-  border-radius: 20px;
-  margin-top: 0;
+  background-color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 2rem;
+  margin-top: -2.5rem;
+  margin-left: 0.5rem;
   content: '';
-  margin-bottom: -20px;
+  z-index: 10;
 }
-
 
 .player ul li:nth-child(1) {
   background-color: #f5c61f;
@@ -347,3 +228,104 @@
 .player.unknown ul li {
   background-color: #3d3d3d;
 }
+
+#controlsHud {
+  z-index: 2;
+  position: absolute;
+  /*
+  width: 100%;
+  height: 100%;
+  */
+}
+
+.layer2 {
+  z-index: 2;
+}
+
+.shootControls {
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 3px;
+  border: 1px solid #000;
+  display: block;
+  position: absolute;
+  width: 20rem;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.power {
+  width: 95%;
+  margin: 0 auto;
+}
+
+.power form, .power input {
+  padding: 0;
+  margin: 0;
+}
+
+#btn_ball {
+  width: 95%;
+  margin: 0.5rem;
+}
+
+.gamelog {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
+  border: 1px solid #000;
+  display: block;
+  position: absolute;
+  width: 30rem;
+  bottom: 1rem;
+  left: 1rem;
+  height: 3rem;
+  padding: 0.5rem;
+  text-align: left;
+  color: #dadada;
+  overflow: hidden;
+}
+
+.gamelog:hover {
+  height: 20rem;
+  overflow: scroll;
+}
+
+.gamelog li:nth-last-child(-n+1) {
+  display: block;
+}
+
+.gamelog:hover li:nth-last-child(-n+6) {
+  display: block;
+}
+
+.gamelog li {
+  margin: 0;
+  padding: 0;
+  margin-top: 0px;
+}
+
+.timer {
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 3px;
+  border: 1px solid #000;
+  display: block;
+  position: absolute;
+  width: 5rem;
+  height: 5rem;
+  right: 1rem;
+  bottom: 1rem;
+  text-align: center;
+  font-size: 4rem;
+  line-height: 4.5rem;
+}
+
+#stats {
+    position: absolute;
+    top: 420px;
+    left: 810px;
+    z-index: 1;
+}
+
+

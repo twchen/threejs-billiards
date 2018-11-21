@@ -29,7 +29,7 @@ class Trajectory {
     this.draw(start, end);
   }
 
-  draw(start, end){
+  draw(start, end) {
     this.line.geometry.vertices[0].copy(start);
     const endCopy = end.clone();
     endCopy.sub(start).multiplyScalar(this.length).add(start);

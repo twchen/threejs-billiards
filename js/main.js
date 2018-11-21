@@ -1,5 +1,5 @@
-//var WIDTH  = window.innerWidth, HEIGHT = window.innerHeight;
-var WIDTH = 960, HEIGHT = 480;
+const WIDTH = Math.floor(window.innerWidth * 0.95);
+const HEIGHT = Math.floor(window.innerHeight * 0.95);
 
 // Globals
 var renderer, scene, camera, game, controls, keyboard, lightsConfig, world, gui, eightballgame;
@@ -8,7 +8,7 @@ var debug = false; // if true then collision wireframes are drawn
 var progressBar;
 
 var stats = new Stats();
-stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+stats.setMode(0); // 0: fps, 1: ms, 2: mb
 
 var textureLoader = new THREE.TextureLoader();
 
@@ -31,11 +31,10 @@ THREE.DefaultLoadingManager.onProgress = function (item, loaded, total) {
   }
 };
 
-// Set some camera attributes
-var VIEW_ANGLE = 45,
-    ASPECT     = WIDTH / HEIGHT,
-    NEAR       = 1,
-    FAR        = 2000;
+const VIEW_ANGLE = 45,
+    ASPECT = WIDTH / HEIGHT,
+    NEAR = 0.5,
+    FAR = 4000;
 
 // We use the clock to measure time, an extension for the keyboard
 var clock = new THREE.Clock();
@@ -45,10 +44,14 @@ function onLoad() {
 
   progressBar = document.getElementById('prog-bar');
 
+  const overlay = document.querySelector('#overlay');
+  overlay.style.width = `${WIDTH}px`;
+  overlay.style.height = `${HEIGHT}px`;
+
   // create a WebGL renderer, camera
   // and a scene
   camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-  camera.up = new THREE.Vector3(0,1,0);
+  camera.up = new THREE.Vector3(0, 1, 0);
 
   scene = new THREE.Scene();
   scene.add(camera);
@@ -70,7 +73,7 @@ function onLoad() {
   addLights();
 
   // MOUSE controls
-  controls = new THREE.OrbitControls(camera,renderer.domElement);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
 
   controls.enableZoom = true;
   controls.enablePan = true;
@@ -86,7 +89,7 @@ function onLoad() {
   renderer.setClearColor(0x262626, 1);
 }
 
-function createPhysicsWorld () {
+function createPhysicsWorld() {
   w = new CANNON.World();
   w.gravity.set(0, 30 * -9.82, 0); // m/s²
 
@@ -113,14 +116,18 @@ function setCollisionBehaviour() {
 
   var ball_floor = new CANNON.ContactMaterial(
     Ball.contactMaterial,
-    Table.floorContactMaterial,
-    {friction: 0.7, restitution: 0.1}
+    Table.floorContactMaterial, {
+      friction: 0.7,
+      restitution: 0.1
+    }
   );
 
   var ball_wall = new CANNON.ContactMaterial(
     Ball.contactMaterial,
-    Table.wallContactMaterial,
-    {friction: 0.5, restitution: 0.9}
+    Table.wallContactMaterial, {
+      friction: 0.5,
+      restitution: 0.9
+    }
   );
 
   world.addContactMaterial(ball_floor);
@@ -129,7 +136,7 @@ function setCollisionBehaviour() {
 
 function draw() {
   stats.begin();
-  
+
   // Controls
   controls.target.copy(game.balls[0].mesh.position);
   controls.update();
@@ -146,14 +153,14 @@ function draw() {
   renderer.render(scene, camera); // We render our scene with our camera
 }
 
-function createSky(){
+function createSky() {
   var geometry = new THREE.CubeGeometry(2000, 2000, 2000);
   var prefix = 'textures/skybox/chlorine-bay_';
   var ext = '.tga';
   var filenames = ['ft', 'bk', 'up', 'dn', 'rt', 'lf'];
   var materials = [];
   var loader = new THREE.TGALoader();
-  for(var i = 0; i < filenames.length; ++i){
+  for (var i = 0; i < filenames.length; ++i) {
     materials.push(new THREE.MeshBasicMaterial({
       map: loader.load(prefix + filenames[i] + ext),
       side: THREE.BackSide
@@ -171,5 +178,5 @@ function addLights() {
   var tableLight1 = new TableLight( Table.LEN_X / 4, 150, 0);
   var tableLight2 = new TableLight(-Table.LEN_X / 4, 150, 0);
   */
-  var sunLight = new DirectionalLight(0, 100, Table.LEN_Z);
+  var sunLight = new DirectionalLight(-150, 150, 0);
 }
