@@ -77,11 +77,13 @@ function onLoad() {
 
   controls.enableZoom = true;
   controls.enablePan = true;
+  // increase precision of arrow key controls
+  controls.keyPanSpeed = 1;
 
   //controls.minDistance = 35;
   //controls.maxDistance = 165;
   // Don't let the camera go below the ground
-  //controls.maxPolarAngle = 0.49 * Math.PI;
+  controls.maxPolarAngle = 0.49 * Math.PI;
 
   camera.position.set(-170, 70, 0);
 
@@ -134,7 +136,7 @@ function setCollisionBehaviour() {
   world.addContactMaterial(ball_wall);
 }
 
-function draw() {
+function draw(time) {
   stats.begin();
 
   // Controls
@@ -150,6 +152,7 @@ function draw() {
 
   stats.end();
   requestAnimationFrame(draw);
+  TWEEN.update(time);
   renderer.render(scene, camera); // We render our scene with our camera
 }
 

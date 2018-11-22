@@ -46,6 +46,7 @@ Game.prototype.tick = function (dt) {
  is determined by the camera position / angle */
 Game.prototype.ballHit = function (strength) {
   if (this.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING) {
-    this.balls[0].hitForward(strength);
+    //this.balls[0].hitForward(strength);
+    this.balls[0].cue.shoot(strength);
   }
 };
