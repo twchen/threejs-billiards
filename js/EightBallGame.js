@@ -1,6 +1,5 @@
-var EightBallGame = function()
-{
-  this.numbered_balls_on_table = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+var EightBallGame = function () {
+  this.numberedBallsOnTable = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   this.turn = 'player1';
   this.sides = {
     'player1': '?',
@@ -25,7 +24,7 @@ EightBallGame.prototype.startTurn = function () {
   eightballgame.timer = 30;
   eightballgame.state = 'turn';
   gui.updateTurn(eightballgame.turn);
-  gui.updateBalls(eightballgame.numbered_balls_on_table, eightballgame.sides.player1, eightballgame.sides.player2);
+  gui.updateBalls(eightballgame.numberedBallsOnTable, eightballgame.sides.player1, eightballgame.sides.player2);
 
   eightballgame.tickTimer();
 }
@@ -37,10 +36,10 @@ EightBallGame.prototype.whiteBallEnteredHole = function () {
 EightBallGame.prototype.coloredBallEnteredHole = function (name) {
   if (typeof name === 'undefined') return;
   var ballno = 0;
-  for (var i = 0; i < eightballgame.numbered_balls_on_table.length; i++) {
-    if (name == eightballgame.numbered_balls_on_table[i] + 'ball') {
-      ballno = eightballgame.numbered_balls_on_table[i];
-      eightballgame.numbered_balls_on_table.splice(i, 1);
+  for (var i = 0; i < eightballgame.numberedBallsOnTable.length; i++) {
+    if (name == eightballgame.numberedBallsOnTable[i] + 'ball') {
+      ballno = eightballgame.numberedBallsOnTable[i];
+      eightballgame.numberedBallsOnTable.splice(i, 1);
       break;
     }
   }
@@ -49,15 +48,21 @@ EightBallGame.prototype.coloredBallEnteredHole = function (name) {
   }
 
   if (ballno == 8) {
-    if (eightballgame.numbered_balls_on_table.length > 1) {
-      gui.log("Game over! 8 ball pocketed too early by " + this.turn);
-      eightballgame.turn = eightballgame.turn == 'player1' ? 'player2': 'player1';
+    const predicate = eightballgame.sides[eightballgame.turn] === 'solid' ? (x => x < 8) : (x => x > 8);
+    let message, winner;
+    if (eightballgame.numberedBallsOnTable.filter(predicate).length > 1) {
+      winner = eightballgame.turn == 'player1' ? 'Player2' : 'Player1';
+      message = "Game over! 8 ball pocketed too early by " + this.turn;
+    }else{
+      winner = eightballgame.turn == 'player1' ? 'Player1' : 'Player2';
+      message = `Game over! ${winner} pocketed the 8 ball!`;
     }
 
+    eightballgame.state = 'gameover';
     eightballgame.pocketingOccurred = true;
+    clearTimeout(eightballgame.ticker);
 
-    // Win!
-    eightballgame.endGame();
+    gui.showEndGame(winner, message);
   } else {
     if (eightballgame.sides.player1 == '?' || eightballgame.sides.player2 == '?') {
       eightballgame.sides[eightballgame.turn] = ballno < 8 ? 'solid' : 'striped';
@@ -76,7 +81,7 @@ EightBallGame.prototype.coloredBallEnteredHole = function (name) {
 }
 
 EightBallGame.prototype.tickTimer = function () {
-  gui.UpdateTimer(eightballgame.timer);
+  gui.updateTimer(eightballgame.timer);
   if (eightballgame.timer == 0) {
     gui.log(eightballgame.turn + " ran out of time");
     eightballgame.state = "outoftime";
@@ -88,16 +93,9 @@ EightBallGame.prototype.tickTimer = function () {
 }
 
 EightBallGame.prototype.switchSides = function () {
-  eightballgame.turn = eightballgame.turn == 'player1' ? 'player2': 'player1';
+  eightballgame.turn = eightballgame.turn == 'player1' ? 'player2' : 'player1';
 
   setTimeout(eightballgame.startTurn, 1000);
-}
-
-EightBallGame.prototype.endGame = function () {
-  eightballgame.state = 'gameover';
-  var winner = eightballgame.turn == 'player1' ? 'Player 1' : 'Player 2';
-  clearTimeout(eightballgame.ticker);
-  gui.showEndGame(winner);
 }
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
@@ -105,23 +103,25 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
     game.ballHit(strength);
     clearTimeout(eightballgame.ticker);
     eightballgame.state = 'turnwaiting';
-    var x = setInterval(function() {
-      if (game.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
-      for (var i=1;i<game.balls.length;i++) {
-        if (game.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(game.balls[i].name.split('ball')[0])) > -1) {
-          return;
+    setTimeout(() => {
+      var x = setInterval(function () {
+        if (game.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+        for (var i = 1; i < game.balls.length; i++) {
+          if (game.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numberedBallsOnTable.indexOf(Number(game.balls[i].name.split('ball')[0])) > -1) {
+            return;
+          }
         }
-      }
-
-      if (eightballgame.pocketingOccurred) {
-        setTimeout(eightballgame.startTurn, 1000);
-      } else {
-        eightballgame.switchSides();
-      }
-
-      eightballgame.pocketingOccurred = false;
-
-      clearInterval(x);
-    }, 30);
+  
+        if (eightballgame.pocketingOccurred) {
+          setTimeout(eightballgame.startTurn, 1000);
+        } else {
+          eightballgame.switchSides();
+        }
+  
+        eightballgame.pocketingOccurred = false;
+  
+        clearInterval(x);
+      }, 30);
+    }, 1000);
   }
 }
