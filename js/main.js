@@ -6,18 +6,17 @@ var renderer, scene, camera, game, controls, keyboard, lightsConfig, world, gui,
 var debug = false; // if true then collision wireframes are drawn
 
 var progressBar;
-
 var stats = new Stats();
 stats.setMode(0); // 0: fps, 1: ms, 2: mb
 
 var textureLoader = new THREE.TextureLoader();
 
-THREE.DefaultLoadingManager.onProgress = function (item, loaded, total) {
+THREE.DefaultLoadingManager.onProgress = function (url, loaded, total) {
   if (typeof progressBar !== 'undefined') {
     progressBar.style.width = (loaded / total * 100) + '%';
   }
 
-  if (loaded == total && total > 7) {
+  if (loaded == total && total > 28) {
     // hide progress bar
     var progBarDiv = document.getElementById('loading');
     //progBarDiv.parentNode.removeChild(progBarDiv);

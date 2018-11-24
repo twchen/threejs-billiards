@@ -1,111 +1,129 @@
-var Table = function () {
-  var mesh_x = -Table.LEN_X / 2;
-  var mesh_y = 0;
-  var mesh_z = Table.LEN_Z / 2;
+class Table {
+  constructor() {
+    this.init();
 
-  var loader = new THREE.JSONLoader();
-  loader.load('json/table/base.json', function (geometry) {
-    var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x7a5230),
-      specular: 0x404040,
-      shininess: 20
-    }));
+    this.floor = this.createFloor(); //floor
 
-    mesh.position.x = mesh_x;
-    mesh.position.y = mesh_y;
-    mesh.position.z = mesh_z;
-    mesh.scale.set(100, 100, 100);
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    scene.add(mesh);
-  });
+    this.holes = this.createHoles();
 
-  loader.load('json/table/felt.json', function (geometry) {
-    //var texture = textureLoader.load('textures/green-light-baize.jpg');
-    var texture = textureLoader.load('textures/baize.jpg');
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-      //color: new THREE.Color(TABLE_COLORS.cloth),
-      specular: 0x404040,
-      shininess: 10,
-      map: texture
-    }));
+    this.walls = this.createWalls();
+  }
 
-    mesh.position.x = mesh_x;
-    mesh.position.y = mesh_y;
-    mesh.position.z = mesh_z;
-    mesh.scale.set(100, 100, 100);
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    scene.add(mesh);
-  });
+  async init() {
+    const meshX = -Table.LEN_X / 2;
+    const meshY = 0;
+    const meshZ = Table.LEN_Z / 2;
 
-  loader.load('json/table/edges.json', function (geometry) {
-    var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x7a5230),
-      specular: 0x404040,
-      shininess: 100
-    }));
+    const feltTexture = await loadTexture('textures/baize.jpg');
 
-    mesh.position.x = mesh_x;
-    mesh.position.y = mesh_y;
-    mesh.position.z = mesh_z;
-    mesh.scale.set(100, 100, 100);
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    scene.add(mesh);
-  });
+    const params = {
+      'base': {
+        color: new THREE.Color(0x7a5230),
+        specular: 0x404040,
+        shininess: 20
+      },
+      'felt': {
+        map: feltTexture,
+        specular: 0x404040,
+        shininess: 10,
+      },
+      'edges': {
+        color: new THREE.Color(0x7a5230),
+        specular: 0x404040,
+        shininess: 100
+      },
+      'pockets': {
+        color: new THREE.Color(0x7a5230),
+        specular: 0x3D3D3D,
+        shininess: 20
+      },
+      'pocket_bottoms': {
+        color: new THREE.Color(0x000),
+        specular: 0x000,
+        shininess: 0
+      }
+    };
 
-  loader.load('json/table/pockets.json', function (geometry) {
-    var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x7a5230),
-      specular: 0x3D3D3D,
-      shininess: 20
-    }));
+    const promises = Object.keys(params).map(async key => {
+      const url = `json/table/${key}.json`;
+      const geometry = await loadJSON(url);
+      const material = new THREE.MeshPhongMaterial(params[key]);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(meshX, meshY, meshZ);
+      mesh.scale.set(100, 100, 100);
+      mesh.receiveShadow = true;
+      mesh.castShadow = true;
+      return mesh;
+    });
 
-    mesh.position.x = mesh_x;
-    mesh.position.y = mesh_y;
-    mesh.position.z = mesh_z;
-    mesh.scale.set(100, 100, 100);
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    scene.add(mesh);
-  });
+    const meshes = await Promise.all(promises);
+    meshes.forEach(mesh => scene.add(mesh));
+  }
 
-  loader.load('json/table/pocket_bottoms.json', function (geometry) {
-    var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x000),
-      specular: 0x000,
-      shininess: 0
-    }));
+  createHoles() {
+    const holes = [
+      //corners of -x table side
+      new Hole(Table.LEN_X / 2 + 1.5, 0, -Table.LEN_Z / 2 - 1.5, Math.PI / 4),
+      new Hole(-Table.LEN_X / 2 - 1.5, 0, -Table.LEN_Z / 2 - 1.5, -Math.PI / 4),
+      //middle holes
+      new Hole(0, 0, -Table.LEN_Z / 2 - 4.8, 0),
+      new Hole(0, 0, Table.LEN_Z / 2 + 4.8, Math.PI),
+      //corners of +x table side
+      new Hole(Table.LEN_X / 2 + 1.5, 0, Table.LEN_Z / 2 + 1.5, 3 * Math.PI / 4),
+      new Hole(-Table.LEN_X / 2 - 1.5, 0, Table.LEN_Z / 2 + 1.5, -3 * Math.PI / 4)
+    ];
+    return holes;
+  }
 
-    mesh.position.x = mesh_x;
-    mesh.position.y = mesh_y;
-    mesh.position.z = mesh_z;
-    mesh.scale.set(100, 100, 100);
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    scene.add(mesh);
-  });
+  createWalls() {
+    const walls = [
+      // walls of -z
+      new LongWall(Table.LEN_X / 4 - 0.8, 2, -Table.LEN_Z / 2, 61),
+      new LongWall(-Table.LEN_X / 4 + 0.8, 2, -Table.LEN_Z / 2, 61),
+      // walls of +z
+      new LongWall(Table.LEN_X / 4 - 0.8, 2, Table.LEN_Z / 2, 61),
+      new LongWall(-Table.LEN_X / 4 + 0.8, 2, Table.LEN_Z / 2, 61),
+      // wall of +x
+      new ShortWall(Table.LEN_X / 2, 2, 0, 60.5),
+      // wall of -x
+      new ShortWall(-Table.LEN_X / 2, 2, 0, 60.5)
+    ];
+    walls[1].body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI);
+    walls[2].body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
+    walls[3].body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI);
+    walls[5].body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -1.5 * Math.PI);
+    walls.forEach(wall => {
+      world.addBody(wall.body);
+      if (debug) {
+        addCannonVisual(wall.body);
+      }
+    });
+    return walls;
+  }
 
-  this.rigidBody = this.createFloor(); //floor
+  createFloor() {
+    const narrowStripWidth = 2;
+    const narrowStripLength = Table.LEN_Z / 2 - 5;
+    const floorThickness = 1;
+    const mainAreaX = Table.LEN_X / 2 - 2 * narrowStripWidth;
 
-  //corners of -x table side
-  this.hole1 = new Hole( Table.LEN_X / 2 + 1.5, 0, -Table.LEN_Z / 2 - 1.5,  Math.PI / 4);
-  this.hole2 = new Hole(-Table.LEN_X / 2 - 1.5, 0, -Table.LEN_Z / 2 - 1.5, -Math.PI / 4);
-  //middle holes
-  this.hole3 = new Hole(0, 0, -Table.LEN_Z / 2 - 4.8, 0);
-  this.hole4 = new Hole(0, 0,  Table.LEN_Z / 2 + 4.8, Math.PI);
-  //corners of +x table side
-  this.hole5 = new Hole( Table.LEN_X / 2 + 1.5, 0, Table.LEN_Z / 2 + 1.5,  3 * Math.PI / 4);
-  this.hole6 = new Hole(-Table.LEN_X / 2 - 1.5, 0, Table.LEN_Z / 2 + 1.5, -3 * Math.PI / 4);
+    const floorBox = new CANNON.Box(new CANNON.Vec3(mainAreaX, floorThickness, Table.LEN_Z / 2));
+    const floorBoxSmall = new CANNON.Box(new CANNON.Vec3(narrowStripWidth, floorThickness, narrowStripLength));
 
-  this.walls = this.createWallBodies();
-};
+    const body = new CANNON.Body({
+      mass: 0, // mass == 0 makes the body static
+      material: Table.floorContactMaterial
+    });
+    body.addShape(floorBox, new CANNON.Vec3(0, -floorThickness, 0));
+    body.addShape(floorBoxSmall, new CANNON.Vec3(-mainAreaX - narrowStripWidth, -floorThickness, 0));
+    body.addShape(floorBoxSmall, new CANNON.Vec3(mainAreaX + narrowStripWidth, -floorThickness, 0));
 
-var TABLE_COLORS = {
-  cloth: 0x4d9900
+    if (debug) {
+      addCannonVisual(body, 0xff0000);
+    }
+    world.add(body);
+    return body
+  }
 };
 
 Table.LEN_Z = 137.16;
@@ -113,58 +131,3 @@ Table.LEN_X = 274.32;
 Table.WALL_HEIGHT = 6;
 Table.floorContactMaterial = new CANNON.Material('floorMaterial');
 Table.wallContactMaterial = new CANNON.Material('wallMaterial');
-
-/** Creates cannon js walls
-This method is 3am spaghetti, you've been warned..*/
-Table.prototype.createWallBodies = function () {
-  //walls of -z
-  var wall1 = new LongWall( Table.LEN_X / 4 - 0.8, 2, -Table.LEN_Z / 2, 61);
-  var wall2 = new LongWall(-Table.LEN_X / 4 + 0.8, 2, -Table.LEN_Z / 2, 61);
-  wall2.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI);
-
-  //walls of -z
-  var wall3 = new LongWall( Table.LEN_X / 4 - 0.8, 2, Table.LEN_Z / 2, 61);
-  var wall4 = new LongWall(-Table.LEN_X / 4 + 0.8, 2, Table.LEN_Z / 2, 61);
-  wall3.body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0),  Math.PI);
-  wall4.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI);
-
-  //wall of +x
-  var wall5 = new ShortWall(Table.LEN_X / 2, 2, 0, 60.5);
-
-  //wall of -x
-  var wall6 = new ShortWall(-Table.LEN_X / 2, 2, 0, 60.5);
-  wall6.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -1.5 * Math.PI);
-
-  var walls = [wall1, wall2, wall3, wall4, wall5, wall6];
-  for (var i in walls) {
-    world.addBody(walls[i].body);
-    if (debug) {
-      addCannonVisual(walls[i].body);
-    }
-  }
-
-  return walls;
-};
-
-Table.prototype.createFloor = function () {
-  var narrowStripWidth = 2;
-  var narrowStripLength = Table.LEN_Z / 2 - 5;
-  var floorThickness = 1;
-  var mainAreaX = Table.LEN_X / 2 - 2 * narrowStripWidth;
-
-  var floorBox = new CANNON.Box(new CANNON.Vec3(mainAreaX, floorThickness, Table.LEN_Z / 2));
-  var floorBoxSmall = new CANNON.Box(new CANNON.Vec3(narrowStripWidth, floorThickness, narrowStripLength));
-
-  this.body = new CANNON.Body({
-    mass: 0, // mass == 0 makes the body static
-    material: Table.floorContactMaterial
-  });
-  this.body.addShape(floorBox,      new CANNON.Vec3(0, -floorThickness, 0));
-  this.body.addShape(floorBoxSmall, new CANNON.Vec3(-mainAreaX - narrowStripWidth, -floorThickness, 0));
-  this.body.addShape(floorBoxSmall, new CANNON.Vec3( mainAreaX + narrowStripWidth, -floorThickness, 0));
-
-  if (debug) {
-    addCannonVisual(this.body, 0xff0000);
-  }
-  world.add(this.body);
-};
