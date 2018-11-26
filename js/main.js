@@ -4,6 +4,7 @@ const HEIGHT = Math.floor(window.innerHeight * 0.95);
 // Globals
 var renderer, scene, camera, game, controls, keyboard, lightsConfig, world, gui, eightballgame;
 var debug = false; // if true then collision wireframes are drawn
+var keyboardControls;
 
 var progressBar;
 var stats = new Stats();
@@ -73,6 +74,7 @@ function onLoad() {
 
   // MOUSE controls
   controls = new THREE.OrbitControls(camera, renderer.domElement);
+  keyboardControls = new KeyboardControls(camera, controls);
 
   controls.enableZoom = true;
   controls.enablePan = true;
@@ -139,8 +141,13 @@ function draw(time) {
   stats.begin();
 
   // Controls
-  controls.target.copy(game.balls[0].mesh.position);
-  controls.update();
+  if(keyboardControls.followingCueball){
+    controls.target.copy(game.balls[0].mesh.position);
+    controls.update();
+  }else{
+    keyboardControls.update();
+  }
+  
 
   // Physics world
   world.step(w.fixedTimeStep);

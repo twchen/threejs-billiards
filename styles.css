@@ -266,9 +266,16 @@
   margin: 0;
 }
 
-#btn_ball {
+#hitBtn {
   width: 95%;
   margin: 0.5rem;
+}
+
+#focusBtn {
+  position: absolute;
+  left: 50%;
+  top: 1rem;
+  transform: translateX(-50%);
 }
 
 .gamelog {
